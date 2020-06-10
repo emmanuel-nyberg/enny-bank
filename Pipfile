@@ -10,7 +10,7 @@ flask-pymongo = "*"
 flask = "*"
 requests = "*"
 pandas = "*"
-black = "*"
+passlib = "*"
 
 [requires]
 python_version = "3.8"
