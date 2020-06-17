@@ -6,14 +6,34 @@ import pandas as pd
 import auth
 
 API_VERSION = "/api/v1.0"
-ENNY_URL = "https://enny.azurewebsites.net"
+#ENNY_URL = "https://enny.azurewebsites.net"
+ENNY_URL = "enny"
 
 app = Flask(__name__)
 app.config["MONGO_URI"] = "mongodb://db:27017/market"
 mongo = PyMongo(app)
 db = mongo.db
 users = db["users"]
+bids = db["bids"]
+asks = db["asks"]
 
+@auth.authorize
+@app.route(f"{API_VERSION}/broker/buy/<symbol>", methods=["POST"])
+def place_bid(symbol):
+    """Place a bid for a stock, check market for matching asks and either fulfil 
+    the order of place it in the market. Checks incoming request for a json with 
+    the amount of stock to buy, the bid and the time limit. Returns status for the bid."""
+    if request.json:
+        order = {"stock": symbol,
+                "bid": request.json["bid"],
+                "amount": request.json["amount"],
+                "user": request.headers.get("uid")}
+        try:
+            deals = asks.find_one_or_404({"$and": {"stock": order["stock"]}, {"$lt": {"ask": order["bid"]}}})
+            for deal in deals:
+                close_deal(deal, order["user"]))
+        except Exception as e:
+            return e
 
 @auth.authorize
 @app.route(f"{API_VERSION}/<symbol>/sell", methods=["POST"])

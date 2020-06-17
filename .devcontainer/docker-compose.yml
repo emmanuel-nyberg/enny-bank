@@ -30,7 +30,30 @@ services:
     
     links: 
       - db
+      - enny
     
+  enny:
+    image: enny:latest
+    restart: unless-stopped
+    command: bash start.sh
+    ports:
+      - 5001:5000
+    environment:
+      - ENNY_DB_USER=enny
+      - ENNY_APIKEY=03VY6PIQ0F7QP4KE
+      - ENNY_DB_HOST=ennydb
+    links:
+      - ennydb
+
+  ennydb:
+    image: postgres
+    restart: unless-stopped
+    ports: 
+      - 5432:5432
+    environment:
+      POSTGRES_PASSWORD: LocalPassword
+      POSTGRES_USER: enny
+
   db:
     image: mongo
     restart: unless-stopped
