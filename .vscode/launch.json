@@ -21,6 +21,22 @@
                 "--no-reload"
             ],
             "jinja": true
+        },
+        {
+            "name": "Python: Celery",
+            "type": "python",
+            "request": "launch",
+            "module": "celery",
+            "console": "integratedTerminal",
+            "args": [
+                "-A",
+                "tasks.celery",
+                "worker",
+                "-l",
+                "info",
+                "-P",
+                "solo",
+            ]
         }
     ]
 }

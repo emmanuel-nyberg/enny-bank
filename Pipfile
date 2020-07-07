@@ -11,6 +11,8 @@ flask = "*"
 requests = "*"
 pandas = "*"
 passlib = "*"
+celery = "*"
+redis = "*"
 
 [requires]
 python_version = "3.8"
