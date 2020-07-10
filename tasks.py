@@ -1,6 +1,9 @@
 from celery import Celery
 from random import choices
+from datetime import datetime
+from datetime import timedelta
 from werkzeug.exceptions import NotFound
+
 import app
 import quant
 
@@ -14,21 +17,25 @@ def make_some_noise():
     with open("./NDX", "r") as stonks:
         syms = stonks.readlines()
 
-    today = app.get_timestamp()["date"]
+    today = datetime.strptime(app.get_timestamp()["date"], "%Y-%m-%d")
     symbols = choices(syms, k=30)
     for symbol in symbols:
         symbol = symbol.strip("\n") 
+        print(symbol)
+        try:
+            order = {
+                "stock": symbol,
+                "price": app.get_stock_price(symbol),
+                "amount": 200,
+                "limit": (today + timedelta(days = 5)).strftime("%Y-%m-%d"),
+                "user": "UBUROI",
+            }
+            print(order)
+        except NotFound:
+            print("NOT FOUND")
+            continue
         if quant.moving_window(app.get_stock_history(symbol)):
-            try:
-                order = {
-                    "stock": symbol,
-                    "price": app.get_stock_price(symbol),
-                    "amount": 200,
-                    "limit": "2030-01-01",
-                    "user": "UBUROI",
-                }
-                app.asks.insert_one(order)
-                app.bids.insert_one(order)
-            except NotFound:
-                pass
-        return "COOL MAN"
+            app.bids.insert_one(order)
+        else:
+            app.asks.insert_one(order)
+    return "COOL MAN"

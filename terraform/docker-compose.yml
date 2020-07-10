@@ -1,0 +1,40 @@
+version: '3'
+
+services:
+  enny-bank:
+    image: cloud.canister.io:5000/emny/enny-bank:latest
+    restart: unless-stopped
+    command: pipenv run ./start.sh
+    ports:
+      - 80:80
+    links: 
+      - db
+      - enny
+    
+  enny:
+    image: cloud.canister.io:5000/emny/enny:latest
+    restart: unless-stopped
+    command: bash start.sh
+    ports:
+      - 5001:5000
+    environment:
+      - ENNY_DB_USER=enny
+      - ENNY_APIKEY=03VY6PIQ0F7QP4KE
+      - ENNY_DB_HOST=ennydb
+    links:
+      - ennydb
+
+  ennydb:
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: LocalPassword
+      POSTGRES_USER: enny
+
+  db:
+    image: mongo
+    restart: unless-stopped
+
+  redis:
+    image: redis
+    restart: unless-stopped

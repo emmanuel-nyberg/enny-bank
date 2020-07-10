@@ -13,6 +13,7 @@ pandas = "*"
 passlib = "*"
 celery = "*"
 redis = "*"
+gunicorn = "*"
 
 [requires]
 python_version = "3.8"
